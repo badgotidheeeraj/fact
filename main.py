@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException,Security
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from auth import Authentication
@@ -13,7 +14,32 @@ Base.metadata.create_all(bind=engine)
 
 
 
+# Adjust or add origins as needed for production.
+origins = [
+    "http://localhost",
+    "https://insurance-prediction-rho.vercel.app",
+    "http://localhost:3000",
+    "http://127.0.0.1",
+    "http://127.0.0.1:3000",
+]
+
+
+
+
+
+
+
 app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # register user
 @app.post("/register", response_model=UserOut)
 def register(user: UserCreate, db: Session = Depends(Authentication.get_db)):
